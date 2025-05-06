@@ -7,7 +7,7 @@ read name
 length="${#name}"
 if [ "$length" -ge 6 ]; then
   echo "Length of the name: $length"
-  first_three=$(echo "$name" | cut -c 1-3)
+  first_three=$(echo "$name" | head -c 3)
   echo "First three characters: $first_three"
   last_three=$(echo "$name" | tail -c 4)
   echo "Last three characters: $last_three"

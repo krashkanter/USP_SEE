@@ -1,38 +1,33 @@
-//  Write a C program that creates a child process to read comments from the standard input and execute them (a minimal implementation of a shell-like program). You can assume that no arguments will be passed to the commands to be executed.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
 
-#define MAX_COMMAND_LENGTH 100
+#define MAX_CMD 100
 
 int main() {
-    char command[MAX_COMMAND_LENGTH];
-    pid_t pid;
-    int status;
+    char cmd[MAX_CMD];
 
     while (1) {
-        printf("Enter a command (or type 'exit' to quit): ");
-        fgets(command, sizeof(command), stdin);
-        command[strcspn(command, "\n")] = '\0';
-        if (strcmp(command, "exit") == 0) {
-            break;
-        }
-        pid = fork();
-        if (pid < 0) {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        } else if (pid == 0) {
-            execlp(command, command, NULL);
+        printf("cmd> ");
+        if (!fgets(cmd, sizeof(cmd), stdin)) break;
+        cmd[strcspn(cmd, "\n")] = 0;
+
+        if (strcmp(cmd, "exit") == 0) break;
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            execlp(cmd, cmd, NULL);
             perror("execlp");
             exit(EXIT_FAILURE);
+        }
+        if (pid > 0) {
+            wait(NULL);
         } else {
-            waitpid(pid, &status, 0);
+            perror("fork");
+            exit(EXIT_FAILURE);
         }
     }
-
     return 0;
 }
-2
